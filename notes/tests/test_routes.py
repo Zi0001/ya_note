@@ -56,28 +56,32 @@ class TestRoutes(TestCase):
 
     def test_redirect_anonymous(self):
         login_url = reverse('users:login')
-
-        urls = (
-            ('notes:add', None),
-            ('notes:edit', (self.notes.slug,)),
-            ('notes:detail', (self.notes.slug,)),
-            ('notes:delete', (self.notes.slug,)),
-            ('notes:list', None),
-            ('notes:success' None)
-        )
+        urls = ( 
+            ('notes:add', None), 
+            ('notes:edit', (self.notes.slug,)), 
+            ('notes:detail', (self.notes.slug,)), 
+            ('notes:delete', (self.notes.slug,)), 
+            ('notes:list', None), 
+            ('notes:success', None)
+        ) 
 
         for name, args in urls:
             with self.subTest(name=name):
                 url = reverse(name, args=args)
+                redirect_url = f'{login_url}?next={url}'
                 response = self.client.get(url)
-                self.assertEqual(response.status_code, HTTPStatus.OK)
+                self.assertRedirects(response, redirect_url)
 
+    def test_static_pages(self):
+        users_statuses = (
+            (self.authenticated_user, HTTPStatus.OK),  
+            (self.anonymous_user, HTTPStatus.OK),
+        )
+        for user, status in users_statuses:
+            self.client.force_login(user)
+            for name in ('users:login', 'users:logout'):
+                with self.subTest(user=user, name=name):
+                    url = reverse(name)
+                    response = self.client.get(url)
+                    self.assertEqual(response.status_code, status)
 
-
-
-
-'''Напишите тесты для маршрутов проекта YaNote;
-в работе ориентируйтесь на ваш план тестирования этого проекта.
-Если в уроке какие-то моменты показались сложными или непонятными
-— сделайте перерыв на несколько часов, а потом прочтите его снова.
-Попробуйте, должно сработать!'''
