@@ -4,6 +4,7 @@ from django.urls import reverse
 import pytest
 from pytest_django.asserts import assertRedirects
 
+
 # Указываем в фикстурах встроенный клиент.
 def test_home_availability_for_anonymous_user(client):
     # Адрес страницы получаем через reverse():
@@ -31,7 +32,8 @@ def test_pages_availability_for_anonymous_user(client, name):
 def test_pages_availability_for_auth_user(not_author_client, name):
     url = reverse(name)
     response = not_author_client.get(url)
-    assert response.status_code == HTTPStatus.OK 
+    assert response.status_code == HTTPStatus.OK
+
 
 # Параметризуем тестирующую функцию:
 @pytest.mark.parametrize(
@@ -41,18 +43,18 @@ def test_pages_availability_for_auth_user(not_author_client, name):
 def test_pages_availability_for_author(author_client, name, note):
     url = reverse(name, args=(note.slug,))
     response = author_client.get(url)
-    assert response.status_code == HTTPStatus.OK 
+    assert response.status_code == HTTPStatus.OK
 
 
 # Добавляем к тесту ещё один декоратор parametrize; в его параметры
 # нужно передать фикстуры-клиенты и ожидаемый код ответа для каждого клиента.
 @pytest.mark.parametrize(
-    # parametrized_client - название параметра, 
+    # parametrized_client - название параметра,
     # в который будут передаваться фикстуры;
     # Параметр expected_status - ожидаемый статус ответа.
     'parametrized_client, expected_status',
     # В кортеже с кортежами передаём значения для параметров:
-    # Предварительно оборачиваем имена фикстур 
+    # Предварительно оборачиваем имена фикстур
     # в вызов функции pytest.lazy_fixture().
     (
         (pytest.lazy_fixture('not_author_client'), HTTPStatus.NOT_FOUND),
@@ -72,9 +74,7 @@ def test_pages_availability_for_different_users(
     # Делаем запрос от имени клиента parametrized_client:
     response = parametrized_client.get(url)
     # Ожидаем ответ страницы, указанный в expected_status:
-    assert response.status_code == expected_status 
-
-
+    assert response.status_code == expected_status
 
 
 @pytest.mark.parametrize(
@@ -95,4 +95,4 @@ def test_redirects(client, name, args):
     url = reverse(name, args=args)
     expected_url = f'{login_url}?next={url}'
     response = client.get(url)
-    assertRedirects(response, expected_url) 
+    assertRedirects(response, expected_url)

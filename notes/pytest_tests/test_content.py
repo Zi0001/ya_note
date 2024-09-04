@@ -26,12 +26,11 @@ def test_notes_list_for_different_users(
     assert (note in object_list) is note_in_list
 
 
-
 @pytest.mark.parametrize(
     # В качестве параметров передаём name и args для reverse.
     'name, args',
     (
-        # Для тестирования страницы создания заметки 
+        # Для тестирования страницы создания заметки
         # никакие дополнительные аргументы для reverse() не нужны.
         ('notes:add', None),
         # Для тестирования страницы редактирования заметки нужен slug заметки.
@@ -46,4 +45,4 @@ def test_pages_contains_form(author_client, name, args):
     # Проверяем, есть ли объект формы в словаре контекста:
     assert 'form' in response.context
     # Проверяем, что объект формы относится к нужному классу.
-    assert isinstance(response.context['form'], NoteForm) 
+    assert isinstance(response.context['form'], NoteForm)

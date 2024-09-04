@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.test import TestCase
 
 from django.urls import reverse
@@ -34,29 +33,21 @@ class TestHomePage(TestCase):
 
     def test_list_notes(self):
         self.client.force_login(self.user_tom)
-
         response = self.client.get(self.LIST_URL)
         object_list = response.context['object_list']
         self.assertIsNotNone(object_list)
 
     def test_notes_unique(self):
-        # Залогинь пользователя 'Тома'
-        self.client.force_login(self.user_tom) 
-
+        self.client.force_login(self.user_tom)
         response = self.client.get(self.LIST_URL)
         object_list = response.context['object_list']
         self.assertIsNotNone(object_list)
-        # Проверь, что в списке только одна заметка от Тома
         self.assertEqual(object_list.count(), 1)
         self.assertEqual(object_list.first().author, self.user_tom)
-
-        # Залогинь пользователя 'Катрин'
-        self.client.force_login(self.user_katrin) 
-
+        self.client.force_login(self.user_katrin)
         response = self.client.get(self.LIST_URL)
         object_list = response.context['object_list']
         self.assertIsNotNone(object_list)
-        # Проверь, что в списке только одна заметка от Катрин
         self.assertEqual(object_list.count(), 1)
         self.assertEqual(object_list.first().author, self.user_katrin)
 

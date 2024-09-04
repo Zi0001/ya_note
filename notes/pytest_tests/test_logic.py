@@ -18,11 +18,10 @@ def test_user_can_create_note(author_client, author, form_data):
     url = reverse('notes:add')
     # В POST-запросе отправляем данные, полученные из фикстуры form_data:
     response = author_client.post(url, data=form_data)
-    # Проверяем, что был выполнен редирект на страницу успешного добавления заметки:
     assertRedirects(response, reverse('notes:success'))
     # Считаем общее количество заметок в БД, ожидаем 1 заметку.
     assert Note.objects.count() == 1
-    # Чтобы проверить значения полей заметки - 
+    # Чтобы проверить значения полей заметки -
     # получаем её из базы при помощи метода get():
     new_note = Note.objects.get()
     # Сверяем атрибуты объекта с ожидаемыми.
@@ -31,9 +30,10 @@ def test_user_can_create_note(author_client, author, form_data):
     assert new_note.slug == form_data['slug']
     assert new_note.author == author
     # Вроде бы здесь нарушен принцип "один тест - одна проверка";
-    # но если хоть одна из этих проверок провалится - 
-    # весь тест можно признать провалившимся, а последующие невыполненные проверки
-    # не внесли бы в отчёт о тесте ничего принципиально важного. 
+    # но если хоть одна из этих проверок провалится -
+    # весь тест можно признать провалившимся,
+    # а последующие невыполненные проверки
+    # не внесли бы в отчёт о тесте ничего принципиально важного.
 
 
 # Добавляем маркер, который обеспечит доступ к базе данных:
@@ -102,10 +102,11 @@ def test_other_user_cant_edit_note(not_author_client, form_data, note):
     assert response.status_code == HTTPStatus.NOT_FOUND
     # Получаем новый объект запросом из БД.
     note_from_db = Note.objects.get(id=note.id)
-    # Проверяем, что атрибуты объекта из БД равны атрибутам заметки до запроса.
+    # Проверяем, что атрибуты объекта из БД
+    # равны атрибутам заметки до запроса.
     assert note.title == note_from_db.title
     assert note.text == note_from_db.text
-    assert note.slug == note_from_db.slug 
+    assert note.slug == note_from_db.slug
 
 
 def test_author_can_delete_note(author_client, slug_for_args):
@@ -119,4 +120,4 @@ def test_other_user_cant_delete_note(not_author_client, slug_for_args):
     url = reverse('notes:delete', args=slug_for_args)
     response = not_author_client.post(url)
     assert response.status_code == HTTPStatus.NOT_FOUND
-    assert Note.objects.count() == 1 
+    assert Note.objects.count() == 1

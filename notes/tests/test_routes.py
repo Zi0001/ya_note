@@ -24,13 +24,11 @@ class TestRoutes(TestCase):
             author=cls.authenticated_user
         )
 
-    '''Задание 1_1'''
     def test_anonimous(self):
         url = reverse('notes:home')
         response = self.client.get(url)
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
-    '''Задание 1_2'''
     def test_authenticated(self):
         self.client.force_login(self.authenticated_user)
         for name in ('notes:home', 'notes:list', 'notes:success', 'notes:add'):
@@ -39,13 +37,12 @@ class TestRoutes(TestCase):
                 response = self.client.get(url)
                 self.assertEqual(response.status_code, HTTPStatus.OK)
 
-    '''Задание 1_3'''
     def test_pages_access(self):
         users_statuses = (
             (self.authenticated_user, HTTPStatus.OK),
             (self.anonymous_user, HTTPStatus.NOT_FOUND),
         )
-  
+
         for user, status in users_statuses:
             self.client.force_login(user)
             for name in ('notes:edit', 'notes:detail', 'notes:delete'):
@@ -56,14 +53,14 @@ class TestRoutes(TestCase):
 
     def test_redirect_anonymous(self):
         login_url = reverse('users:login')
-        urls = ( 
-            ('notes:add', None), 
-            ('notes:edit', (self.notes.slug,)), 
-            ('notes:detail', (self.notes.slug,)), 
-            ('notes:delete', (self.notes.slug,)), 
-            ('notes:list', None), 
+        urls = (
+            ('notes:add', None),
+            ('notes:edit', (self.notes.slug,)),
+            ('notes:detail', (self.notes.slug,)),
+            ('notes:delete', (self.notes.slug,)),
+            ('notes:list', None),
             ('notes:success', None)
-        ) 
+        )
 
         for name, args in urls:
             with self.subTest(name=name):
@@ -74,7 +71,7 @@ class TestRoutes(TestCase):
 
     def test_static_pages(self):
         users_statuses = (
-            (self.authenticated_user, HTTPStatus.OK),  
+            (self.authenticated_user, HTTPStatus.OK),
             (self.anonymous_user, HTTPStatus.OK),
         )
         for user, status in users_statuses:
@@ -84,4 +81,3 @@ class TestRoutes(TestCase):
                     url = reverse(name)
                     response = self.client.get(url)
                     self.assertEqual(response.status_code, status)
-
