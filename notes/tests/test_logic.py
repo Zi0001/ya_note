@@ -23,6 +23,7 @@ class TestNotesLogic(TestCase):
 
     def test_notes_anonymous_user(self):
         response = self.client.post(self.url, data=self.form_data)
+        self.assertEqual(response.status_code, 302)
         notes_count = Note.objects.count()
         self.assertEqual(notes_count, 0)
 
@@ -35,6 +36,7 @@ class TestNotesLogic(TestCase):
         )
         response = self.auth_client.post(self.url, data=self.form_data)
         notes_count = Note.objects.count()
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(notes_count, 1)
 
     def test_notes_duplicate_slug(self):
@@ -77,8 +79,9 @@ class TestEditDeleteNotes(TestCase):
         cls.delete_url = reverse('notes:delete', args=(cls.note.slug,))
         cls.edit = reverse('notes:edit', args=(cls.note.slug,))
 
-    def test_edit_suer_frodo(self):
+    def test_edit_user_frodo(self):
         response = self.auth_client.post(self.url, data=self.form_data)
+        self.assertEqual(response.status_code, 302)
         self.note.refresh_from_db()
         self.assertEqual(self.note.title, 'Проверка')
 
